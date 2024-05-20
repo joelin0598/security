@@ -1,9 +1,8 @@
 package com.jaax.springsecurity.service;
 
-import com.jaax.springsecurity.config.JwtService;
-import com.jaax.springsecurity.controller.models.AuthResponse;
-import com.jaax.springsecurity.controller.models.AuthenticationRequest;
-import com.jaax.springsecurity.controller.models.RegisterRequest;
+import com.jaax.springsecurity.DTO.AuthResponse;
+import com.jaax.springsecurity.DTO.AuthenticationRequest;
+import com.jaax.springsecurity.DTO.RegisterRequest;
 import com.jaax.springsecurity.entity.Role;
 import com.jaax.springsecurity.entity.User;
 import com.jaax.springsecurity.repository.UserRepository;
@@ -20,34 +19,32 @@ public class AuthServiceImpl implements AuthService{
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-    private final AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;//Interfaz propia de Spring Security
+
     @Override
-    public AuthResponse register(RegisterRequest request) {
+    public AuthResponse register(RegisterRequest request) {//Método para generar el token después del registro del usuario.
         var user = User.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.USER)
+                .password(passwordEncoder.encode(request.getPassword()))//Encriptación del password
+                .role(Role.USER)//Por default se coloco USER = usuario normal, modificar lógica según requerimiento.
                 .build();
         userRepository.save(user);
-        var jwtToken = jwtService.generateToken(user);
+        var jwtToken = jwtService.generateToken(user);//Siempre a base de userDetails
         return AuthResponse.builder()
                 .token(jwtToken).build();
     }
 
     @Override
-    public AuthResponse authenticate(AuthenticationRequest request) {
+    public AuthResponse authenticate(AuthenticationRequest request) {//Autenticación de usuario
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
-                        request.getPassword()
-                )
+                        request.getPassword())
         );
-        var user = userRepository.findUserByEmail(request.getEmail()).orElseThrow();
+        var user = userRepository.findUserByEmail(request.getEmail()).orElseThrow();//Consultar en base de datos el Email.
         var jwtToken = jwtService.generateToken(user);
-
-        return AuthResponse.builder()
-                .token(jwtToken).build();
+        return AuthResponse.builder().token(jwtToken).build();
     }
 }

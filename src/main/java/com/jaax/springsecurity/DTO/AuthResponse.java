@@ -1,4 +1,4 @@
-package com.jaax.springsecurity.controller.models;
+package com.jaax.springsecurity.DTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

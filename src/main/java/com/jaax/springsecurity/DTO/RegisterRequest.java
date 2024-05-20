@@ -1,5 +1,4 @@
-package com.jaax.springsecurity.controller.models;
-
+package com.jaax.springsecurity.DTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,8 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthenticationRequest {
+public class RegisterRequest {
+    private String firstName;
+    private String lastName;
     private String email;
     private String password;
-
 }

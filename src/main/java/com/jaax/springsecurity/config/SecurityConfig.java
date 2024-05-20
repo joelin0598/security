@@ -20,26 +20,22 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 @RequiredArgsConstructor
 @EnableMethodSecurity
 public class SecurityConfig {//SecurityFilterChain es una cadena de seguridad donde se van ejecutando el filtrado y la autenticación
-//Se define la seguridad que se le va a aplicar a los endpoints
+                            //Se define la seguridad que se le va a aplicar a los endpoints
     private final JwtFilter jwtFilter;
     private final AuthenticationProvider authenticationProvider;
 
-    @Bean
+    @Bean//Cadena de filtrado, que será la responsable de lanzar nuestro filtro antes del proceso de autenticación
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable())
+        http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()//Se define que métodos son públicos, lista blanca
-                        .requestMatchers("/api/users").hasAuthority("ROLE_ADMIN")  // Uso de requestMatchers en lugar de antMatchers
-                        .anyRequest().authenticated()
-                )
+                        .requestMatchers("/api/users").hasAuthority("ROLE_ADMIN")
+                        .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);//UsernamePasswordAuthenticationFilter es un filtro que se ejecuta antes de JwtFilter y es propia de Spring Security
-
         return http.build();
     }
-
 
     private RequestMatcher publicEndpoints() {
         return new OrRequestMatcher(

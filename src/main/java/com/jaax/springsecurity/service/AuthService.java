@@ -1,8 +1,8 @@
 package com.jaax.springsecurity.service;
 
-import com.jaax.springsecurity.controller.models.AuthResponse;
-import com.jaax.springsecurity.controller.models.AuthenticationRequest;
-import com.jaax.springsecurity.controller.models.RegisterRequest;
+import com.jaax.springsecurity.DTO.AuthResponse;
+import com.jaax.springsecurity.DTO.AuthenticationRequest;
+import com.jaax.springsecurity.DTO.RegisterRequest;
 
 public interface AuthService {
 

@@ -39,9 +39,9 @@ public class AppConfig {
         return  new BCryptPasswordEncoder();
     }
 
-    @Bean
+    @Bean//Para que la inyección de la interfaz an el AuthServiceImpl pueda utilizarse
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception{
-    return config.getAuthenticationManager();
+    return config.getAuthenticationManager();//Es una clase que nos permite gestionar la autenticación por medio de una request(usuario, password)
     }
 
 
