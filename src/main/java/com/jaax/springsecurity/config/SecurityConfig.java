@@ -25,23 +25,23 @@ public class SecurityConfig {//SecurityFilterChain es una cadena de seguridad do
     private final AuthenticationProvider authenticationProvider;
 
     @Bean//Cadena de filtrado, que será la responsable de lanzar nuestro filtro antes del proceso de autenticación
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()//Se define que métodos son públicos, lista blanca
-                        .requestMatchers("/api/users").hasAuthority("ROLE_ADMIN")
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity.csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth.requestMatchers(publicEndpoints()).permitAll()//Se define que métodos son públicos, lista blanca
+                        //.requestMatchers("/api/auth/**").permitAll()
+                        //.requestMatchers("/api/users").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated())
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);//UsernamePasswordAuthenticationFilter es un filtro que se ejecuta antes de JwtFilter y es propia de Spring Security
-        return http.build();
+        return httpSecurity.build();
     }
 
     private RequestMatcher publicEndpoints() {
         return new OrRequestMatcher(
-                new AntPathRequestMatcher("/api/greeting/hello"),
+                new AntPathRequestMatcher("/api/greeting/sayHelloPublic"),
                 new AntPathRequestMatcher("/api/auth/**")
-             //   new AntPathRequestMatcher("/api/users/**")
+                //new AntPathRequestMatcher("/api/users/**")
                 // Aquí puedes agregar más matchers para otras rutas públicas si es necesario
         );
     }
