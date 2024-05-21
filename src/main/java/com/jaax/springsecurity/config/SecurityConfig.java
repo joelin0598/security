@@ -40,7 +40,10 @@ public class SecurityConfig {//SecurityFilterChain es una cadena de seguridad do
     private RequestMatcher publicEndpoints() {
         return new OrRequestMatcher(
                 new AntPathRequestMatcher("/api/greeting/sayHelloPublic"),
-                new AntPathRequestMatcher("/api/auth/**")
+                new AntPathRequestMatcher("/api/auth/**"),
+                 new AntPathRequestMatcher("/doc/**", "GET"),
+                new AntPathRequestMatcher("/swagger-ui/**", "GET"),
+                new AntPathRequestMatcher("/v3/api-docs/**", "GET")
                 //new AntPathRequestMatcher("/api/users/**")
                 // Aquí puedes agregar más matchers para otras rutas públicas si es necesario
         );

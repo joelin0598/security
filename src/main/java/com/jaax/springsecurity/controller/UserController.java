@@ -1,6 +1,5 @@
 package com.jaax.springsecurity.controller;
 
-import com.jaax.springsecurity.entity.User;
 import com.jaax.springsecurity.repository.UserRepository;
 import com.jaax.springsecurity.DTO.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
