@@ -20,10 +20,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class AppConfig {
 
     private final UserRepository userRepository;
-    @Bean//Para que Spring lo pueda inyectar
+    @Bean // Para que Spring lo pueda inyectar
     public UserDetailsService userDetailsService() {
-        return username -> userRepository.findUserByEmail(username)//Expresión Lambda
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return username -> {
+            try {
+                return userRepository.findUserByEmail(username)// Buscar el usuario en el repositorio
+                        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+            } catch (UsernameNotFoundException ex) {
+                System.out.println("User not found: " + ex.getMessage());
+                throw ex;
+            }
+        };
     }
 
     @Bean//Se utiliza en SecurityConfig, este es el proveedor de autenticación
@@ -43,6 +50,4 @@ public class AppConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception{
     return config.getAuthenticationManager();//Es una clase que nos permite gestionar la autenticación por medio de una request(usuario, password)
     }
-
-
 }

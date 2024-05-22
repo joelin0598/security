@@ -1,6 +1,7 @@
 package com.jaax.springsecurity.config;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -9,16 +10,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import java.util.Arrays;
 import java.util.List;
 
-
+@Configuration
 public class CorsConfig implements WebMvcConfigurer {
 
-    /*
-     * This method is used to configure the CORS.
-     * to allow the frontend to access the backend.
-     */
     @Bean
     public static CorsConfigurationSource corsConfigurationSource() {
-
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(List.of("*")); // Use allowedOriginPatterns
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));

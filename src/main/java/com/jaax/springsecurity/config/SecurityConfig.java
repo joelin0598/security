@@ -19,8 +19,8 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 @EnableWebSecurity
 @RequiredArgsConstructor
 @EnableMethodSecurity
-public class SecurityConfig {//SecurityFilterChain es una cadena de seguridad donde se van ejecutando el filtrado y la autenticación
-                            //Se define la seguridad que se le va a aplicar a los endpoints
+public class SecurityConfig {//SecurityFilterChain es una cadena de seguridad donde se van ejecutando el filtrado y la autenticación. Se define la seguridad que se le va a aplicar a los endpoints
+
     private final JwtFilter jwtFilter;
     private final AuthenticationProvider authenticationProvider;
 
@@ -28,8 +28,6 @@ public class SecurityConfig {//SecurityFilterChain es una cadena de seguridad do
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth.requestMatchers(publicEndpoints()).permitAll()//Se define que métodos son públicos, lista blanca
-                        //.requestMatchers("/api/auth/**").permitAll()
-                        //.requestMatchers("/api/users").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
@@ -44,8 +42,6 @@ public class SecurityConfig {//SecurityFilterChain es una cadena de seguridad do
                  new AntPathRequestMatcher("/doc/**", "GET"),
                 new AntPathRequestMatcher("/swagger-ui/**", "GET"),
                 new AntPathRequestMatcher("/v3/api-docs/**", "GET")
-                //new AntPathRequestMatcher("/api/users/**")
-                // Aquí puedes agregar más matchers para otras rutas públicas si es necesario
         );
     }
 }
