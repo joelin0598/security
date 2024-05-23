@@ -1,5 +1,6 @@
 package com.jaax.springsecurity.config;
 
+import com.jaax.springsecurity.exception.InvalidTokenException;
 import com.jaax.springsecurity.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -7,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -38,7 +40,13 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }//Si hay un jwt y empieza con Bearer se obtiene el jwt y se obtiene el email del usuario
         jwt = authHeader.substring(7); //A partir del caracter 7 se encuentra el jwt ejemplo Bearer eyJfadflikjalkdfi
-        userEmail = jwtService.getUserName(jwt);
+        try {
+            userEmail = jwtService.getUserName(jwt);
+        } catch (Exception e) {
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.getWriter().write("Invalid Token");
+            return;
+        }
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {//Validadndo que el email no sea nulo y que no haya una autenticación previa
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail); //loadUserByUsername es un método de la interfaz UserDetailsService que se implementa en la clase UserDetailsServiceImpl
             if (jwtService.validateToken(jwt, userDetails)) {//Validando que el jwt sea válido, si no se reponde con un estatus 403

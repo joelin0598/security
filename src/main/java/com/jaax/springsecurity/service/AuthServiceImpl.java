@@ -5,10 +5,14 @@ import com.jaax.springsecurity.DTO.AuthenticationRequest;
 import com.jaax.springsecurity.DTO.RegisterRequest;
 import com.jaax.springsecurity.entity.Role;
 import com.jaax.springsecurity.entity.User;
+import com.jaax.springsecurity.exception.CustomAuthenticationException;
 import com.jaax.springsecurity.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -37,14 +41,28 @@ public class AuthServiceImpl implements AuthService{
     }
 
     @Override
-    public AuthResponse authenticate(AuthenticationRequest request) {//Autenticación de usuario
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword())
-        );
-        var user = userRepository.findUserByEmail(request.getEmail()).orElseThrow();//Consultar en base de datos el Email.
-        var jwtToken = jwtService.generateToken(user);
-        return AuthResponse.builder().token(jwtToken).build();
+    public AuthResponse authenticate(AuthenticationRequest request) {
+        try {
+            var user = userRepository.findUserByEmail(request.getEmail())
+                    .orElseThrow(() -> new CustomAuthenticationException("Usuario no registrado"));
+
+            try {
+                authenticationManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(
+                                request.getEmail(),
+                                request.getPassword()
+                        )
+                );
+            } catch (BadCredentialsException e) {
+                throw new CustomAuthenticationException("Contraseña incorrecta");
+            }
+
+            var jwtToken = jwtService.generateToken(user);
+            return AuthResponse.builder()
+                    .token(jwtToken)
+                    .build();
+        } catch (UsernameNotFoundException e) {
+            throw new CustomAuthenticationException("Usuario no registrado");
+        }
     }
 }

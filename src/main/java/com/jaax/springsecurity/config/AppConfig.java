@@ -25,10 +25,10 @@ public class AppConfig {
         return username -> {
             try {
                 return userRepository.findUserByEmail(username)// Buscar el usuario en el repositorio
-                        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-            } catch (UsernameNotFoundException ex) {
-                System.out.println("User not found: " + ex.getMessage());
-                throw ex;
+                        .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrdao for userDetailsService"));
+            } catch (UsernameNotFoundException e) {
+                System.out.println("User not found: " + e.getMessage());
+                throw e;
             }
         };
     }
