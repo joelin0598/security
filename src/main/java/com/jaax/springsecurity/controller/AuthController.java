@@ -6,6 +6,7 @@ import com.jaax.springsecurity.DTO.ErrorResponse;
 import com.jaax.springsecurity.DTO.RegisterRequest;
 import com.jaax.springsecurity.exception.CustomAuthenticationException;
 import com.jaax.springsecurity.exception.DuplicateEmailException;
+import com.jaax.springsecurity.exception.InvalidPasswordFormatException;
 import com.jaax.springsecurity.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request){//Crear un modelo/dto AuthResponse
+    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
         return ResponseEntity.ok(authService.register(request));
     }
     @PostMapping("/authenticate")
@@ -43,4 +44,10 @@ public class AuthController {
     public ResponseEntity<ErrorResponse> handleDuplicateEmailException(DuplicateEmailException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(e.getMessage()));
     }
+
+    @ExceptionHandler(InvalidPasswordFormatException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidPasswordFormatException(InvalidPasswordFormatException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(e.getMessage()));
+    }
+
 }
