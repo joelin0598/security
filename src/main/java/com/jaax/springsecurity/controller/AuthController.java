@@ -5,6 +5,7 @@ import com.jaax.springsecurity.DTO.AuthenticationRequest;
 import com.jaax.springsecurity.DTO.ErrorResponse;
 import com.jaax.springsecurity.DTO.RegisterRequest;
 import com.jaax.springsecurity.exception.CustomAuthenticationException;
+import com.jaax.springsecurity.exception.DuplicateEmailException;
 import com.jaax.springsecurity.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,5 +37,10 @@ public class AuthController {
     @ExceptionHandler(CustomAuthenticationException.class)
     public ResponseEntity<ErrorResponse> handleCustomAuthenticationException(CustomAuthenticationException e) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorResponse.builder().errorMessage(e.getMessage()).build());
+    }
+
+    @ExceptionHandler(DuplicateEmailException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicateEmailException(DuplicateEmailException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(e.getMessage()));
     }
 }

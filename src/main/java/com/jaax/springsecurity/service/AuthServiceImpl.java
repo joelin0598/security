@@ -6,6 +6,7 @@ import com.jaax.springsecurity.DTO.RegisterRequest;
 import com.jaax.springsecurity.entity.Role;
 import com.jaax.springsecurity.entity.User;
 import com.jaax.springsecurity.exception.CustomAuthenticationException;
+import com.jaax.springsecurity.exception.DuplicateEmailException;
 import com.jaax.springsecurity.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,6 +28,9 @@ public class AuthServiceImpl implements AuthService{
 
     @Override
     public AuthResponse register(RegisterRequest request) {//Método para generar el token después del registro del usuario.
+        if (userRepository.findUserByEmail(request.getEmail()).isPresent()) {// Verificar si el correo electrónico ya existe
+            throw new DuplicateEmailException("El correo electrónico ya está en uso");
+        }
         var user = User.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
@@ -37,7 +41,8 @@ public class AuthServiceImpl implements AuthService{
         userRepository.save(user);
         var jwtToken = jwtService.generateToken(user);//Siempre a base de userDetails
         return AuthResponse.builder()
-                .token(jwtToken).build();
+                .token(jwtToken)
+                .build();
     }
 
     @Override
